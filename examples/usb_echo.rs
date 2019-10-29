@@ -1,40 +1,25 @@
 #![no_main]
 #![no_std]
 
-
 extern crate panic_halt;
 
-
-use cortex_m::{
-    interrupt,
-    peripheral::NVIC,
-};
-use cortex_m_rt::entry;
 use catena_4610::hal::{
+    pac::{self, Interrupt},
     prelude::*,
-    pac::{
-        self,
-        Interrupt,
-    },
     pwr::PWR,
     rcc,
     syscfg::SYSCFG,
     usb::USB,
 };
+use cortex_m::{interrupt, peripheral::NVIC};
+use cortex_m_rt::entry;
 use stm32_usbd::UsbBus;
-use usbd_serial::{
-    SerialPort,
-    USB_CLASS_CDC,
-};
 use usb_device::{
-    UsbError,
     bus::UsbBus as UsbBusTrait,
-    device::{
-        UsbDeviceBuilder,
-        UsbVidPid,
-    },
+    device::{UsbDeviceBuilder, UsbVidPid},
+    UsbError,
 };
-
+use usbd_serial::{SerialPort, USB_CLASS_CDC};
 
 #[entry]
 fn main() -> ! {
@@ -98,10 +83,9 @@ fn main() -> ! {
     }
 }
 
-
-fn echo<Bus>(serial: &mut SerialPort<Bus>)
-    -> Result<(), UsbError>
-    where Bus: UsbBusTrait
+fn echo<Bus>(serial: &mut SerialPort<Bus>) -> Result<(), UsbError>
+where
+    Bus: UsbBusTrait,
 {
     let mut buffer = [0u8; 32];
 
@@ -116,7 +100,7 @@ fn echo<Bus>(serial: &mut SerialPort<Bus>)
 
     let mut offset = 0;
     while offset < bytes_read {
-        let bytes_written = serial.write(&buffer[offset .. bytes_read])?;
+        let bytes_written = serial.write(&buffer[offset..bytes_read])?;
         offset += bytes_written;
     }
 
