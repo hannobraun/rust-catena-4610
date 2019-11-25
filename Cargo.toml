@@ -20,7 +20,7 @@ panic-halt  = "0.2.0"
 stm32-usbd  = "0.5.0"
 usb-device  = "0.2.3"
 usbd-serial = "0.1.0"
-longfi-device = { git = "https://github.com/helium/longfi-device-rs.git", tag = "0.1.0"}
+longfi-device = { git = "https://github.com/helium/longfi-device-rs.git", branch = "master"}
 
 [dev-dependencies.cortex-m-rtfm]
 git = "https://github.com/rtfm-rs/cortex-m-rtfm.git"
