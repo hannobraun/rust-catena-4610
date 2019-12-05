@@ -4,8 +4,9 @@ version = "0.1.0"
 authors = ["Hanno Braun <hanno@braun-embedded.com>"]
 edition = "2018"
 
-[dependencies]
-cmwx1zzabz = { git = "https://github.com/braun-embedded/cmwx1zzabz-rs.git", branch = "update-dependencies"}
+[dependencies.cmwx1zzabz]
+git = "https://github.com/lthiery/cmwx1zzabz-rs.git"
+branch = "master"
 
 [dependencies.stm32l0xx-hal]
 version  = "0.5.0"
