@@ -7,7 +7,14 @@
 extern crate nb;
 extern crate panic_halt;
 
-use hal::{gpio::*, pac, prelude::*, rcc, serial, syscfg};
+use hal::{
+    exti::{
+        self,
+        Exti,
+        ExtiLine as _,
+    },
+    gpio::*, prelude::*, rcc, serial, syscfg,
+};
 use hal::rng::Rng;
 use rtfm::app;
 use stm32l0xx_hal as hal;
@@ -23,7 +30,7 @@ static mut PRESHARED_KEY: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
 #[app(device = stm32l0xx_hal::pac, peripherals = true)]
 const APP: () = {
     struct Resources {
-        int: pac::EXTI,
+        int: Exti,
         radio_irq: catena_4610::RadioIRQ,
         debug_uart: serial::Tx<catena_4610::DebugUsart>,
         uart_rx: serial::Rx<catena_4610::DebugUsart>,
@@ -58,10 +65,14 @@ const APP: () = {
 
         write!(tx, "LongFi Device Test\r\n").unwrap();
 
-        let mut exti = device.EXTI;
+        let mut exti = Exti::new(device.EXTI);
         let hsi48 = rcc.enable_hsi48(&mut syscfg, device.CRS);
         let rng = Rng::new(device.RNG, &mut rcc, hsi48);
-        let radio_irq = catena_4610::initialize_radio_irq(gpiob.pb4, &mut syscfg, &mut exti);
+        let radio_irq = catena_4610::initialize_radio_irq(
+            gpiob.pb4,
+            &mut syscfg,
+            &mut exti,
+        );
 
         *BINDINGS = Some(catena_4610::LongFiBindings::new(
             device.SPI1,
@@ -252,7 +263,10 @@ const APP: () = {
 
     #[task(binds = EXTI4_15, priority = 1, resources = [radio_irq, int], spawn = [radio_event])]
     fn EXTI4_15(ctx: EXTI4_15::Context) {
-        ctx.resources.int.clear_irq(ctx.resources.radio_irq.pin_number());
+        let line = exti::GpioLine::from_raw_line(
+            ctx.resources.radio_irq.pin_number(),
+        );
+        Exti::unpend(line.unwrap());
         ctx.spawn.radio_event(RfEvent::DIO0).unwrap();
     }
 

@@ -5,12 +5,15 @@ extern crate panic_halt;
 
 use cortex_m_rt::entry;
 use stm32l0xx_hal::{
-    exti, gpio, pac,
+    exti::{
+        self,
+        Exti,
+    },
+    pac,
     prelude::*,
     pwr::PWR,
     rcc,
     rtc::{self, Instant, RTC},
-    syscfg::SYSCFG,
 };
 
 #[entry]
@@ -29,9 +32,8 @@ fn main() -> ! {
     led.set_high().unwrap();
 
     let mut scb    = cp.SCB;
-    let mut exti   = dp.EXTI;
+    let mut exti   = Exti::new(dp.EXTI);
     let mut pwr    = PWR::new(dp.PWR, &mut rcc);
-    let mut syscfg = SYSCFG::new(dp.SYSCFG, &mut rcc);
 
     let instant = Instant::new()
         .set_year(19)
@@ -43,16 +45,12 @@ fn main() -> ! {
 
     let mut rtc = RTC::new(dp.RTC, &mut rcc, &mut pwr, instant);
 
-    let exti_line = 20; // RTC wakeup timer
-
     rtc.enable_interrupts(rtc::Interrupts {
         wakeup_timer: true,
         ..rtc::Interrupts::default()
     });
-    exti.listen(
-        &mut syscfg,
-        gpio::Port::PA, // argument ignored; next argument is not a GPIO line
-        exti_line,
+    exti.listen_configurable(
+        exti::ConfigurableLine::RtcWakeup,
         exti::TriggerEdge::Rising,
     );
 
@@ -60,7 +58,10 @@ fn main() -> ! {
 
     rtc.wakeup_timer().start(1u32);
 
-    exti.wait_for_irq(exti_line, pwr.standby_mode(&mut scb));
+    exti.wait_for_irq(
+        exti::ConfigurableLine::RtcWakeup,
+        pwr.standby_mode(&mut scb),
+    );
 
     // Waking up from Standby mode resets the microcontroller, so we should
     // never reach this point.
