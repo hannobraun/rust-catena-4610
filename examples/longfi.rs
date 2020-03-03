@@ -69,7 +69,7 @@ const APP: () = {
         let hsi48 = rcc.enable_hsi48(&mut syscfg, device.CRS);
         let rng = Rng::new(device.RNG, &mut rcc, hsi48);
         let radio_irq = catena_4610::initialize_radio_irq(
-            gpiob.pb4,
+            gpiob.pb4.into_floating_input(),
             &mut syscfg,
             &mut exti,
         );
@@ -81,11 +81,11 @@ const APP: () = {
             gpiob.pb3,
             gpioa.pa6,
             gpioa.pa7,
-            gpioa.pa15,
-            gpioc.pc0,
-            gpioa.pa1,
-            gpioc.pc2,
-            gpioc.pc1,
+            gpioa.pa15.into_floating_input(),
+            gpioc.pc0.into_floating_input(),
+            gpioa.pa1.into_floating_input(),
+            gpioc.pc2.into_floating_input(),
+            gpioc.pc1.into_floating_input(),
             Some(gpioa.pa8.into_push_pull_output()),
         ));
 
