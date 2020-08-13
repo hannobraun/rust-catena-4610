@@ -13,10 +13,9 @@ use hal::{
         Exti,
         ExtiLine as _,
     },
-    gpio::*, prelude::*, rcc, serial, syscfg,
+    gpio::*, prelude::*, rcc, serial::{self, Serial1Ext}, syscfg,
 };
 use hal::rng::Rng;
-use rtfm::app;
 use stm32l0xx_hal as hal;
 
 use longfi_device;
@@ -27,7 +26,7 @@ use core::fmt::Write;
 
 static mut PRESHARED_KEY: [u8; 16] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
-#[app(device = stm32l0xx_hal::pac, peripherals = true)]
+#[rtic::app(device = stm32l0xx_hal::pac, peripherals = true)]
 const APP: () = {
     struct Resources {
         int: Exti,
@@ -56,7 +55,7 @@ const APP: () = {
         let (tx_pin, rx_pin, serial_peripheral) = (gpioa.pa9, gpioa.pa10, device.USART1);
 
         let mut serial = serial_peripheral
-            .usart((tx_pin, rx_pin), serial::Config::default(), &mut rcc)
+            .usart(tx_pin, rx_pin, serial::Config::default(), &mut rcc)
             .unwrap();
 
         // listen for incoming bytes which will trigger transmits
