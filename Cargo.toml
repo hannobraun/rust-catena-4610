@@ -17,7 +17,7 @@ features = ["rt", "mcu-STM32L082KBTx", "stm32-usbd"]
 
 
 [dev-dependencies]
-cortex-m      = "0.6.3"
+cortex-m      = "0.7.2"
 cortex-m-rt   = "0.6.12"
 cortex-m-rtic = "0.5.3"
 nb            = "1.0.0"
@@ -25,7 +25,10 @@ panic-halt    = "0.2.0"
 stm32-usbd    = "0.5.1"
 usb-device    = "0.2.5"
 usbd-serial   = "0.1.0"
-longfi-device = { git = "https://github.com/helium/longfi-device-rs.git", branch = "master"}
+
+[dev-dependencies.longfi-device]
+git    = "https://github.com/helium/longfi-device-rs.git"
+branch = "master"
 
 
 [profile.dev]
