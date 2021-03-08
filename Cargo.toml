@@ -25,7 +25,10 @@ panic-halt    = "0.2.0"
 stm32-usbd    = "0.5.1"
 usb-device    = "0.2.5"
 usbd-serial   = "0.1.0"
-longfi-device = { git = "https://github.com/helium/longfi-device-rs.git", branch = "master"}
+
+[dev-dependencies.longfi-device]
+git    = "https://github.com/helium/longfi-device-rs.git"
+branch = "master"
 
 
 [profile.dev]
