@@ -14,16 +14,22 @@ It is currently in its early stages. Documentation is sparse and features are ba
 
 Currently, two ways for flashing code to the Gnat are supported:
 - Using the built-in bootloader via [dfu-util].
-- Using an external STLINK programmer via [OpenOCD].
+- Using an external STLINK programmer via [cargo-embed].
 
-Open `.cargo/config` and uncomment the runner that matches your preferred configuration (comment all other ones). Then you can flash an example program like this:
+To flash an example using `dfu-util`, run something like this:
 
 ```
 cargo run --example led
 ```
 
+To flash an example using `cargo-embed`, run something like this:
+
+```
+cargo embed --example led
+```
+
 [dfu-util]: http://dfu-util.sourceforge.net/
-[OpenOCD]: http://openocd.org/
+[cargo-embed]: https://github.com/probe-rs/cargo-embed
 
 
 ## License
